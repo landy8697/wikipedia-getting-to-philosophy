@@ -1,0 +1,27 @@
+{
+  "name": "wikipedia_stuff",
+  "version": "1.0.0",
+  "description": "doing philosophy stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://landy8697: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@github.com/SLHSCS/getting-to-philosophy-2021-landy8697.git"
+  },
+  "author": "ya boi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SLHSCS/getting-to-philosophy-2021-landy8697/issues"
+  },
+  "homepage": "https://github.com/SLHSCS/getting-to-philosophy-2021-landy8697#readme",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "cheerio": "^1.0.0-rc.10",
+    "jssoup": "^0.0.15",
+    "node-fetch": "^3.2.3",
+    "wikijs": "^6.3.3",
+    "wikipedia": "^1.1.8"
+  }
+}
