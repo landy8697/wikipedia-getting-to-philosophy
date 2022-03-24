@@ -13,8 +13,26 @@ const scrapWiki = async () => {
 	const wikiUrl =
 		"https://en.wikipedia.org/wiki/Batman";
 
-	const html = await fetchHtml(wikiUrl);
+	var html = await fetchHtml(wikiUrl);
+	html = html.substring(html.indexOf('<p>'))
+	html = html.substring(0, html.indexOf('</p>'));
+	console.log(html);
+	/*
+	const wikiUrl =
+		"https://en.wikipedia.org/wiki/Batman";
+
+	var html = await fetchHtml(wikiUrl);
+	const $ = cheerio.load(html);
+	$('#coordinates').remove();
+	var link = $('#mw-content-text').html();
+	//console.log(link)
+	link = link.substring(link.indexOf('<p>'))
+	console.log(link);
+	link = link.substring(0, link.indexOf('</p>'))
+	console.log(link)
+	*/
 	//console.log(html);
+	/*
 	const selector = cheerio.load(html);
 
 	
@@ -25,7 +43,7 @@ const scrapWiki = async () => {
 		const href = link.attribs.href;
 		if(href=="/wiki/Superhero")console.log(href);
 	});
-	
+	*/
 	  /*
 	const searchResults = selector("body")
 		.find("mw-content-text")
@@ -38,6 +56,9 @@ const scrapWiki = async () => {
 };
 
 scrapWiki();
+
+
+
 /*
 const wiki = require('wikijs').default;
 wiki().page('batman').then(page => page.links({limit:5000})).then(console.log);
