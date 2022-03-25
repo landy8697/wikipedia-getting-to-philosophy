@@ -17,6 +17,7 @@ const titleMap = new Map();
 map1.set('https://en.wikipedia.org/wiki/Philosophy', 0);
 const scrapWiki = async (url) => {
 	if(url=='https://en.wikipedia.org/wiki/Philosophy')return;
+	console.log('hi');
 	//console.log(url);
 	//if(map1.has(title)){
 	//	console.log(`${cnt++}: ${title}`)
@@ -33,8 +34,8 @@ const scrapWiki = async (url) => {
 	
 	var html = await fetchHtml(wikiUrl);
 	var orig = html;
-	//var title = html.substring(html.indexOf('<title>'+7), html.indexOf('</title>'));
-	
+	var title = html.substring(html.indexOf('<title>'+7), html.indexOf('</title>'));
+	console.log(title);
 	//titleMap.set(title, url);
 	html = html.substring(html.indexOf('h1'))
 	let idx = html.indexOf('id="toc"');
