@@ -11,10 +11,31 @@ const fetchHtml = async url => {
 }
 var link = "";
 var cnt = 0;
+const map1 = new Map();
+const curSet = new Set();
+const titleMap = new Map();
+map1.set('https://en.wikipedia.org/wiki/Philosophy', 0);
 const scrapWiki = async (url) => {
+	if(url=='https://en.wikipedia.org/wiki/Philosophy')return;
+	//console.log(url);
+	//if(map1.has(title)){
+	//	console.log(`${cnt++}: ${title}`)
+	//	scrapWiki(map1.get(title));
+	//}
+	if(curSet.has(url)){
+		return;
+	}
+	if(map1.has(url)){
+		console.log(`${cnt++}: ${url}`)
+		scrapWiki(map1.get(url));
+	}
 	const wikiUrl = url;
-	var html = await fetchHtml(wikiUrl);
 	
+	var html = await fetchHtml(wikiUrl);
+	var orig = html;
+	//var title = html.substring(html.indexOf('<title>'+7), html.indexOf('</title>'));
+	
+	//titleMap.set(title, url);
 	html = html.substring(html.indexOf('h1'))
 	let idx = html.indexOf('id="toc"');
     
@@ -38,9 +59,23 @@ const scrapWiki = async (url) => {
         idx = 0;
 	}
 	//console.log(html)
+	link = firstValidLink(html);
+	
+	link = 'https://en.wikipedia.org'+link;
+	
+	curSet.add(url);
+	map1.set(url, link);
+	//console.log(curSet);
+	console.log(`${cnt++}: ${link}`)
+	if(link ==  'https://en.wikipedia.org/wiki/Philosophy')return;
+	scrapWiki(link);
+	
+};
+
+function firstValidLink(html){
 	let isLink = false;
 	let paren = 0;
-	
+	let curlink = '';
 	for(var s of html.split(' ')){
 		
 		if(s.includes('('))paren+=(s.split("(").length - 1);
@@ -55,35 +90,54 @@ const scrapWiki = async (url) => {
 		}
 		if(s.includes('<a'))isLink = true;
 		if(s.includes('</a>'))isLink = false;
+		if(!s.includes('/wiki/'))continue;
 		if(s.includes('reference'))continue;
 		if(s.includes('cite_note'))continue;
-
+		if(s.includes('Help'))continue;
 		if(s.includes('href')){
 			//console.log(s);
-			link = s.substring(6, s.length-1);
+			curlink = s.substring(6, s.length-1);
 			break;
 		}
 		//console.log(s);
 	}
-	
-	link = 'https://en.wikipedia.org'+link;
-	console.log(`${cnt++}: ${link}`)
-	if(link ==  'https://en.wikipedia.org/wiki/Philosophy')return;
-	scrapWiki(link);
-	
-};
+	return curlink;
+}
+
 var readline = require('readline');
 var rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout
   
   });
-  rl.question(">>Enter a link  ", function(answer) {
-	link = answer;
-	console.log(`${cnt++}: ${link}`)
-	scrapWiki(link);
+
+var finished = false;
+
+rl.question(">>Enter number of articles: ", function(answer) {
+	let num = parseInt(answer);
+	for(let i = 0; i < num; i++){
+		curSet.clear();
+		scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
+		//scrapWiki('https://en.wikipedia.org/wiki/United_States');
+		
+	}
+	
 	rl.close();
- });
+});
+	/*
+	add while loop
+	rl.question(">>Enter a link, END to finish: ", function(answer) {
+		if(answer=='END'){
+			finished = false;
+			r1.close();
+		}
+		link = answer;
+		console.log(`${cnt++}: ${link}`)
+		scrapWiki(link);
+		rl.close();
+	});
+	*/
+
 
 
 
