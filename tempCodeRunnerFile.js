@@ -1,8 +1,3 @@
-const fetchHtml = async url => {
-	try {
-		const { data } = await axios.get(url);
-		return data;
-	} catch {
-		console.error(`ERROR: An error occurred while trying to fetch the URL: ${url}`);
-	}
-}
+idx = html.indexOf('</table>');
+    var html2 = html;
+	if(idx!=-1||idx>html.indexOf('h1'))html = html.substring(html.indexOf('</table>'))

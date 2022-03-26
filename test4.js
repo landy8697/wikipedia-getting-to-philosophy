@@ -17,94 +17,22 @@ const curSet = new Set();
 const titleMap = new Map();
 map1.set('https://en.wikipedia.org/wiki/Philosophy', 0);
 const scrapWiki = async (url, chain) => {
-	if(url=='https://en.wikipedia.org/wiki/Philosophy'){
-		map1.set(prevTitle, 'Philosophy')
-		console.log(`${cnt++}: ${'Philosophy'}`)
-		return;
-	}
-	if(chain){
-		if(url=='Philosophy'){
-			console.log(`${cnt++}: ${'Philosophy'}`)
-			return;
-		}
-		if(curSet.has(url)){
-			console.log(`${cnt++}: ${url}`)
-			console.log('Found a loop!')
-			return;
-		}
-		curSet.add(url);
-		console.log(`${cnt++}: ${url} (Found)`)
-		return await scrapWiki(map1.get(url), true);
-	}
-	//console.log(url);
-	//if(map1.has(title)){
-	//	console.log(`${cnt++}: ${title}`)
-	//	scrapWiki(map1.get(title));
-	//}
+	
 	
 	const wikiUrl = url;
 	
 	var html = await fetchHtml(wikiUrl);
-	var orig = html;
-	var title = html.substring(html.indexOf('<title>')+7, html.indexOf('</title>'));
-	title = title.substring(0, title.indexOf(' - Wikipedia'));
-	//titleMap.set(url. title);
-	if(prevTitle!='')map1.set(prevTitle, title);
-	if(curSet.has(url)){
-		console.log(`${cnt++}: ${title}`)
-		console.log('Found a loop!')
-		return;
-	}else{
-		if(url!='https://en.wikipedia.org/wiki/Special:Random')curSet.add(url);
-		curSet.add(title);
-	}
-	if(map1.has(title)){
-		console.log(`${cnt++}: ${title}`)
-		return await scrapWiki(map1.get(title), true);
-	}
-	//console.log(title);
-	//titleMap.set(title, url);
-	html = html.substring(html.indexOf('h1'))
-	let idx = html.indexOf('id="toc"');
-    
-	if(idx!=-1)html = html.substring(0, html.indexOf('id="toc"'))
-    idx = html.indexOf('</table>');
-    var html2 = html;
+	idx = html.indexOf('</table>');
 	if(idx!=-1||idx>html.indexOf('h1'))html = html.substring(html.indexOf('</table>'))
 	
-    //console.log(html2)
-	idx = html.indexOf('<p>');
-	html = html.substring(html.indexOf('<p>'))
-	html = html.substring(0, html.indexOf('</p>'));
-	//console.log(html);
-	while(!html.includes('href')){
-        html = html2;
-		html = html.substring(idx+4);
-        html2 = html;
-        idx = html.indexOf('<p>');
-		html = html.substring(html.indexOf('<p>'))
-		html = html.substring(0, html.indexOf('</p>'));
-        idx = 0;
-	}
-	//console.log(html)
 	link = firstValidLink(html);
-	if(link==''){
-		let linkFound = false;
-		while(!linkFound){
-			orig = orig.substring(orig.indexOf(html)+html.length);
-			html = orig.substring(orig.indexOf('<p>'))
-			html = html.substring(0, html.indexOf('</p>'));
-			link = firstValidLink(html);
-			if(link!='')linkFound=true;
-		}
-	}
-	prevTitle = title;
+
 	link = 'https://en.wikipedia.org'+link;
 	//if(!curSet.has(link))scrapWiki(link, false);
 	
 	
 	//console.log(curSet);
-	console.log(`${cnt++}: ${title}`)
+	console.log(`${cnt++}: ${link}`)
 	//console.log(link);
 	//if(link ==  'https://en.wikipedia.org/wiki/Philosophy')return;
 	return await scrapWiki(link, false);
@@ -136,6 +64,11 @@ function firstValidLink(html){
 		if(s.includes('Help'))continue;
 		if(s.includes('Wikipedia'))continue;
 		if(s.includes('File'))continue;
+        if(s.includes('wikipedia'))continue;
+        if(s.includes('Template'))continue;
+        if(s.includes('Talk'))continue;
+        if(s.includes('Talk'))continue;
+        if(s.includes('Category'))continue;
 		if(s.includes('href')){
 			//console.log(s);
 			curlink = s.substring(6, s.length-1);
@@ -154,7 +87,11 @@ var rl = readline.createInterface({
   });
 
 var finished = false;
-
+curSet.clear();
+cnt = 0;
+prevTitle = '';
+scrapWiki('https://en.wikipedia.org/wiki/The_Diary_of_a_Chambermaid_(novel)');
+/*
 rl.question(">>Enter number of articles: ", async function(answer) {
 	let num = parseInt(answer);
 	for(let i = 0; i < num; i++){
@@ -169,6 +106,7 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 	
 	rl.close();
 });
+*/
 	/*
 	add while loop
 	rl.question(">>Enter a link, END to finish: ", function(answer) {
