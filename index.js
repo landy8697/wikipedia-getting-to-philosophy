@@ -12,6 +12,7 @@ const fetchHtml = async url => {
 var link = "";
 var cnt = 0;
 var prevTitle = '';
+var searchNumber = 0;
 const map1 = new Map();
 const curSet = new Set();
 const titleMap = new Map();
@@ -48,6 +49,9 @@ const scrapWiki = async (url, chain) => {
 	var orig = html;
 	var title = html.substring(html.indexOf('<title>')+7, html.indexOf('</title>'));
 	title = title.substring(0, title.indexOf(' - Wikipedia'));
+	if(cnt==0){
+		console.log(title, searchNumber++);
+	}
 	//titleMap.set(url. title);
 	if(prevTitle!='')map1.set(prevTitle, title);
 	if(curSet.has(url)){
@@ -104,7 +108,8 @@ const scrapWiki = async (url, chain) => {
 	
 	
 	//console.log(curSet);
-	console.log(`${cnt++}: ${title}`)
+	if(cnt!=0)console.log(`${cnt++}: ${title}`)
+	else cnt++;
 	//console.log(link);
 	//if(link ==  'https://en.wikipedia.org/wiki/Philosophy')return;
 	return await scrapWiki(link, false);
@@ -136,6 +141,7 @@ function firstValidLink(html){
 		if(s.includes('Help'))continue;
 		if(s.includes('Wikipedia'))continue;
 		if(s.includes('File'))continue;
+		if(s.includes('wiktionary'))continue;
 		if(s.includes('href')){
 			//console.log(s);
 			curlink = s.substring(6, s.length-1);
@@ -162,13 +168,20 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 		curSet.clear();
 		cnt = 0;
 		prevTitle = '';
+		//await scrapWiki('https://en.wikipedia.org/wiki/Cat')
 		await scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
 		//scrapWiki('https://en.wikipedia.org/wiki/United_States');
 		//scrapWiki('https://en.wikipedia.org/wiki/Creativity', false);
 	}
 	
 	rl.close();
-});
+});	
+	//https://en.wikipedia.org/wiki/National_Democratic_Action_Movement
+
+
+
+
+
 	/*
 	add while loop
 	rl.question(">>Enter a link, END to finish: ", function(answer) {
