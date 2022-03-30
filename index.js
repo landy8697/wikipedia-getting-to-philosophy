@@ -12,6 +12,7 @@ const fetchHtml = async url => {
 var link = "";
 var cnt = 0;
 var prevTitle = '';
+var searchNumber = 0;
 const map1 = new Map();
 const curSet = new Set();
 const dict = {};
@@ -45,6 +46,9 @@ const scrapWiki = async (url, chain) => {
 	var orig = html;
 	var title = html.substring(html.indexOf('<title>')+7, html.indexOf('</title>'));
 	title = title.substring(0, title.indexOf(' - Wikipedia'));
+	if(cnt==0){
+		console.log(title, searchNumber++);
+	}
 	//titleMap.set(url. title);
 	if(url=='https://en.wikipedia.org/wiki/Special:Random'){
 		firstTitle = title;
@@ -182,7 +186,13 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 	  });
 	  console.log(items);
 	rl.close();
-});
+});	
+	//https://en.wikipedia.org/wiki/National_Democratic_Action_Movement
+
+
+
+
+
 	/*
 	add while loop
 	rl.question(">>Enter a link, END to finish: ", function(answer) {
