@@ -71,11 +71,10 @@ const scrapWiki = async (url, chain) => {
 	//titleMap.set(title, url);
 	var $ = cheerio.load(html);   
     $('table').each(function() {      
-		//console.log(this.attribs)
-        this.children = {};     
+        $(this).children = {};     
     });$('.toc').each(function() {      
 		//console.log('YAY')
-        this.children = {};     
+        $(this).children = {};     
     });
 	link = '';
 	$('p').each(function() {
@@ -130,7 +129,6 @@ function firstValidLink(html){
 		if(s.includes('cite_note'))continue;s
 		if(s.includes('Help'))continue;
 		if(s.includes('Wikipedia'))continue;
-		if(s.includes('wikipedia'))continue;
 		if(s.includes('wikimedia'))continue;
 		if(s.includes('wiktionary'))continue;
 		if(s.includes('File'))continue;
@@ -161,8 +159,8 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 		curSet.clear();
 		cnt = 0;
 		prevTitle = '';
-        //var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/1900_in_literature', false);
-		var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
+        var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/Creativity', false);
+		//var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
 		dict[firstTitle] = linkCnt;
 		//scrapWiki('https://en.wikipedia.org/wiki/United_States');
 		//scrapWiki('https://en.wikipedia.org/wiki/Creativity', false);
