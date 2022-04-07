@@ -69,40 +69,30 @@ const scrapWiki = async (url, chain) => {
 	}
 	//console.log(title);
 	//titleMap.set(title, url);
-	html = html.substring(html.indexOf('h1'))
-	let idx = html.indexOf('id="toc"');
-    
-	if(idx!=-1)html = html.substring(0, html.indexOf('id="toc"'))
-    idx = html.indexOf('</table>');
-    var html2 = html;
-	if(idx!=-1||idx>html.indexOf('h1'))html = html.substring(html.indexOf('</table>'))
-	
-    //console.log(html2)
-	idx = html.indexOf('<p>');
-	html = html.substring(html.indexOf('<p>'))
-	html = html.substring(0, html.indexOf('</p>'));
-	//console.log(html);
-	while(!html.includes('href')){
-        html = html2;
-		html = html.substring(idx+4);
-        html2 = html;
-        idx = html.indexOf('<p>');
-		html = html.substring(html.indexOf('<p>'))
-		html = html.substring(0, html.indexOf('</p>'));
-        idx = 0;
-	}
-	//console.log(html)
-	link = firstValidLink(html);
-	if(link==''){
-		let linkFound = false;
-		while(!linkFound){
-			orig = orig.substring(orig.indexOf(html)+html.length);
-			html = orig.substring(orig.indexOf('<p>'))
-			html = html.substring(0, html.indexOf('</p>'));
-			link = firstValidLink(html);
-			if(link!='')linkFound=true;
-		}
-	}
+	var $ = cheerio.load(html);   
+    $('table').each(function() {      
+		//console.log(this.attribs)
+        this.children = {};     
+    });$('.toc').each(function() {      
+		//console.log('YAY')
+        this.children = {};     
+    });
+	link = '';
+	$('p').each(function() {
+		//console.log($(this).html());
+		let html2 = $(this).html();
+		if(!html2.includes('href'))return true;
+		link = firstValidLink(html2);
+		if(link!='')return false;
+	});
+	$('li').each(function() {
+		if(link!='')return false;
+		//console.log($(this).html());
+		let html2 = $(this).html();
+		if(!html2.includes('href'))return true;
+		link = firstValidLink(html2);
+		if(link!='')return false;
+	});
 	prevTitle = title;
 	link = 'https://en.wikipedia.org'+link;
 	//if(!curSet.has(link))scrapWiki(link, false);
@@ -140,6 +130,7 @@ function firstValidLink(html){
 		if(s.includes('cite_note'))continue;s
 		if(s.includes('Help'))continue;
 		if(s.includes('Wikipedia'))continue;
+		if(s.includes('wikipedia'))continue;
 		if(s.includes('wikimedia'))continue;
 		if(s.includes('wiktionary'))continue;
 		if(s.includes('File'))continue;
@@ -170,6 +161,7 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 		curSet.clear();
 		cnt = 0;
 		prevTitle = '';
+        //var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/1900_in_literature', false);
 		var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
 		dict[firstTitle] = linkCnt;
 		//scrapWiki('https://en.wikipedia.org/wiki/United_States');
