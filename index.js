@@ -46,9 +46,9 @@ const scrapWiki = async (url, chain) => {
 	var orig = html;
 	var title = html.substring(html.indexOf('<title>')+7, html.indexOf('</title>'));
 	title = title.substring(0, title.indexOf(' - Wikipedia'));
-	if(cnt==0){
-		console.log(title, searchNumber++);
-	}
+	//if(cnt==0){
+	//	console.log(title, searchNumber++);
+	//}
 	//titleMap.set(url. title);
 	if(url=='https://en.wikipedia.org/wiki/Special:Random'){
 		firstTitle = title;
@@ -175,7 +175,7 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 		//scrapWiki('https://en.wikipedia.org/wiki/United_States');
 		//scrapWiki('https://en.wikipedia.org/wiki/Creativity', false);
 	}
-	console.log(dict);
+	//console.log(dict);
 	var items = Object.keys(dict).map(function(key) {
 		return [key, dict[key]];
 	  });
@@ -187,77 +187,3 @@ rl.question(">>Enter number of articles: ", async function(answer) {
 	  console.log(items);
 	rl.close();
 });	
-	//https://en.wikipedia.org/wiki/National_Democratic_Action_Movement
-
-
-
-
-
-	/*
-	add while loop
-	rl.question(">>Enter a link, END to finish: ", function(answer) {
-		if(answer=='END'){
-			finished = false;
-			r1.close();
-		}
-		link = answer;
-		console.log(`${cnt++}: ${link}`)
-		scrapWiki(link);
-		rl.close();
-	});
-	*/
-
-
-
-
-//
-/*
-let person = prompt("Enter a wikipedia article link");
-link = input;
-cnt = 0;
-console.log(`${cnt++}: ${link}`)
-scrapWiki(link);
-*/
-/*
-function prompt(question, callback) {
-    var stdin = process.stdin,
-        stdout = process.stdout;
-
-    stdin.resume();
-    stdout.write(question);
-
-    stdin.once('data', function (data) {
-        callback(data.toString().trim());
-    });
-}
-
-prompt('Enter a wikipedia article link:\n', function (input) {
-    //console.log(input);
-
-	link = input;
-	//link = 'https://en.wikipedia.org/wiki/Mathematics'
-	cnt = 0;
-	console.log(`${cnt++}: ${link}`)
-	scrapWiki(link);
-    process.exit();
-});
-*/
-
-
-/*
-const $ = cheerio.load(html);
-	
-	//while(html.includes('<table')){
-	//	html = html.substring(0, html.indexOf('<table')+6)+html.substring('</table>')
-	//}
-	/*
-	$('table').each((i, link) => {
-
-		//console.log($(this).html)
-		$(this).html('');
-	});
-	html = $.html()
-	*/
-	//console.log(html);
-	//console.log(html==='hi')
-	
