@@ -1,6 +1,8 @@
 const cheerio = require("cheerio");
 const axios = require("axios").default;
 const wiki = require('wikipedia');
+const fs = require('fs');
+
 const fetchHtml = async url => {
 	try {
 		const { data } = await axios.get(url);
@@ -13,15 +15,16 @@ var link = "";
 var cnt = 0;
 var prevTitle = '';
 var searchNumber = 0;
-const map1 = new Map();
+var map1;
 const curSet = new Set();
 const dict = {};
 var articleNum = 1;
 var firstTitle = '';
-map1.set('https://en.wikipedia.org/wiki/Philosophy', 0);
+
+//5map1.set('https://en.wikipedia.org/wiki/Philosophy', 0);
 const scrapWiki = async (url, chain) => {
 	if(url=='https://en.wikipedia.org/wiki/Philosophy'){
-		map1.set(prevTitle, 'Philosophy')
+		map1[prevTitle] =  'Philosophy';
 		console.log(`${cnt++}: ${'Philosophy'}`)
 		return 1;
 	}
@@ -37,7 +40,7 @@ const scrapWiki = async (url, chain) => {
 		}
 		curSet.add(url);
 		console.log(`${cnt++}: ${url} (Found)`)
-		return await scrapWiki(map1.get(url), true)+1;
+		return await scrapWiki(map1[url], true)+1;
 	}
 	
 	const wikiUrl = url;
@@ -53,8 +56,9 @@ const scrapWiki = async (url, chain) => {
 	if(url=='https://en.wikipedia.org/wiki/Special:Random'){
 		firstTitle = title;
 		console.log(title, articleNum++);
+		cnt++;
 	}
-	if(prevTitle!='')map1.set(prevTitle, title);
+	if(prevTitle!='')map1[prevTitle] = title;
 	if(curSet.has(url)){
 		console.log(`${cnt++}: ${title}`)
 		console.log('Found a loop!')
@@ -63,9 +67,9 @@ const scrapWiki = async (url, chain) => {
 		if(url!='https://en.wikipedia.org/wiki/Special:Random')curSet.add(url);
 		curSet.add(title);
 	}
-	if(map1.has(title)){
+	if(map1[title]!=null){
 		console.log(`${cnt++}: ${title}`)
-		return await scrapWiki(map1.get(title), true)+1;
+		return await scrapWiki(map1[title], true)+1;
 	}
 	//console.log(title);
 	//titleMap.set(title, url);
@@ -93,6 +97,7 @@ const scrapWiki = async (url, chain) => {
 		link = firstValidLink(html2);
 		if(link!='')return false;
 	});
+	if(link=='')return;
 	prevTitle = title;
 	link = 'https://en.wikipedia.org'+link;
 	//if(!curSet.has(link))scrapWiki(link, false);
@@ -153,29 +158,52 @@ var rl = readline.createInterface({
   });
 
 var finished = false;
+var useJSON = false;
 
-rl.question(">>Enter number of articles: ", async function(answer) {
-	let num = parseInt(answer);
-	for(let i = 0; i < num; i++){
-		console.log('---------------------------------------------------------------')
-		curSet.clear();
-		cnt = 0;
-		prevTitle = '';
-        //var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/1900_in_literature', false);
-		var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
-		dict[firstTitle] = linkCnt;
-		//scrapWiki('https://en.wikipedia.org/wiki/United_States');
-		//scrapWiki('https://en.wikipedia.org/wiki/Creativity', false);
+rl.question(">> Use Stored JSON(Y/N): ", function(answer){
+	useJSON = (answer=='Y') ? true : false;
+	if(useJSON){
+		let rawdata = fs.readFileSync('paths.json');
+		map1 = JSON.parse(rawdata);
+	}else{
+		map1 = {};
 	}
-	//console.log(dict);
-	var items = Object.keys(dict).map(function(key) {
-		return [key, dict[key]];
-	  });
-	  
-	  // Sort the array based on the second element
-	  items.sort(function(first, second) {
-		return second[1] - first[1];
-	  });
-	  console.log(items);
-	rl.close();
-});	
+	rl.question(">> Enter number of articles: ", async function(answer) {
+		let num = parseInt(answer);
+		for(let i = 0; i < num; i++){
+			console.log('---------------------------------------------------------------')
+			curSet.clear();
+			cnt = 0;
+			prevTitle = '';
+			//var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/1900_in_literature', false);
+			var linkCnt = await scrapWiki('https://en.wikipedia.org/wiki/Special:Random');
+			dict[firstTitle] = linkCnt;
+			//scrapWiki('https://en.wikipedia.org/wiki/United_States');
+			//scrapWiki('https://en.wikipedia.org/wiki/Creativity', false);
+		}
+		//console.log(dict);
+		var items = Object.keys(dict).map(function(key) {
+			return [key, dict[key]];
+		});
+		// Sort the array based on the second element
+		
+		items.sort(function(first, second) {
+			return second[1] - first[1];
+		});
+		/*
+		for (const [key, value] of Object.entries(dict)) {
+			console.log(`${key}: ${value}`);
+		  }
+		  */
+		console.log(items);
+		let data = JSON.stringify(map1, null, 2);
+		if(useJSON)fs.writeFileSync('paths.json', data);
+		rl.close();
+	});	
+});
+
+/*
+
+
+*/
+
